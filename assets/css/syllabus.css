@@ -406,3 +406,13 @@ a { color: var(--blue); text-decoration: none; }   /* prose links are underlined
   .hb-layout > .hb-toc { transition: none !important; }
 }
 /* Feature cards carry more content, so give them room to breathe */
+
+/* Tables from the doc (BME 406 additions). The first row is the doc's header
+   row, and a row that is one merged cell (the schedule's "Week 1: ..." rows)
+   is a section row. */
+.hb-table table { font-size: var(--fs--1); }
+.hb-table td, .hb-table th { padding: 8px 10px; line-height: 1.5; }
+.hb-table tr:first-child td { background: var(--bg-soft); color: var(--ink); font-weight: 700; }
+.hb-table tr.hb-row-span td { background: #e9effb; color: var(--navy); font-weight: 700; border-top: 2px solid var(--navy); }
+.hb-table tr.hb-row-span td .hb-b { color: var(--navy); }
+@media (max-width: 640px) { .hb-table table { min-width: 640px; } }   /* phones scroll the table sideways instead of crushing it */
