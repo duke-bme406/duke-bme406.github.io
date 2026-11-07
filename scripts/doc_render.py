@@ -665,10 +665,28 @@ def build(doc, strip_links=True):
                 kind, attrs, inner = cm.group(1), cm.group(2), cm.group(3)
                 span = int((re.search(r'colspan="(\d+)"', attrs) or [0, 1])[1])
                 rspan = int((re.search(r'rowspan="(\d+)"', attrs) or [0, 1])[1])
-                paras = re.findall(r"<p\b[^>]*>(.*?)</p>", inner, re.DOTALL) or [inner]
-                lines = [clean_inline(x, styles, strip_links) for x in paras]
-                lines = [x for x in lines if plain(x)]
-                row.append({"k": kind, "span": span, "rspan": rspan, "html": "<br>".join(lines)})
+                parts, items = [], []                                    # paragraphs on their own lines, bullets as a list
+                for bm in re.finditer(r"<(p|li)\b[^>]*>(.*?)</\1>", inner, re.DOTALL):
+                    html = clean_inline(bm.group(2), styles, strip_links)
+                    if not plain(html):
+                        continue
+                    if bm.group(1) == "li":
+                        items.append(html)
+                        continue
+                    if items:
+                        parts.append('<ul class="hb-cell-list"><li>%s</li></ul>' % "</li><li>".join(items)); items = []
+                    parts.append(html)
+                if items:
+                    parts.append('<ul class="hb-cell-list"><li>%s</li></ul>' % "</li><li>".join(items))
+                if not parts and plain(clean_inline(inner, styles, strip_links)):
+                    parts = [clean_inline(inner, styles, strip_links)]
+                html = ""
+                for x in parts:                                            # <br> between paragraphs, none around lists
+                    html += ("" if not html or x.startswith("<ul") or html.endswith("</ul>") else "<br>") + x
+                runs = [(m2.group(1), m2.group(2)) for m2 in re.finditer(r'<span class="([^"]*)">(.*?)</span>', inner, re.DOTALL)]
+                texts = [(c, t) for c, t in runs if plain(t)]
+                bold = bool(texts) and all(any(n in styles["bold"] for n in c.split()) for c, t in texts)
+                row.append({"k": kind, "span": span, "rspan": rspan, "html": html, "bold": bold})
             if row:
                 grid.append(row)
         if not grid:
@@ -682,8 +700,10 @@ def build(doc, strip_links=True):
                 drop = set()
         if drop:
             log.debug("table: dropping empty column(s) %s of %d", sorted(drop), ncols)
+        filled = [c for c in grid[0] if plain(c["html"])]
+        head_row = len(grid) > 1 and bool(filled) and all(c["bold"] for c in filled)   # first row is a header only if all of it is bold in the doc
         rows = []
-        for r in grid:
+        for ri, r in enumerate(grid):
             if len(r) == 1 and r[0]["span"] == ncols:                  # one merged cell: a section row
                 c = r[0]
                 rows.append('      <tr class="hb-row-span"><t%s colspan="%d">%s</t%s></tr>'
@@ -699,7 +719,7 @@ def build(doc, strip_links=True):
                 attrs = (' colspan="%d"' % span if span > 1 else "") + (' rowspan="%d"' % c["rspan"] if c["rspan"] > 1 else "")
                 cells.append("<t%s%s>%s</t%s>" % (c["k"], attrs, c["html"], c["k"]))
                 col += c["span"]
-            rows.append("      <tr>%s</tr>" % "".join(cells))
+            rows.append("      <tr%s>%s</tr>" % (' class="hb-row-head"' if ri == 0 and head_row else "", "".join(cells)))
         return '  <div class="hb-table"><table>\n%s\n  </table></div>' % "\n".join(rows)
 
     in_guide = False
