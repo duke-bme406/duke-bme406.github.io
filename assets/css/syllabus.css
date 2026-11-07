@@ -416,3 +416,20 @@ a { color: var(--blue); text-decoration: none; }   /* prose links are underlined
 .hb-table tr.hb-row-span td { background: #e9effb; color: var(--navy); font-weight: 700; border-top: 2px solid var(--navy); }
 .hb-table tr.hb-row-span td .hb-b { color: var(--navy); }
 @media (max-width: 640px) { .hb-table table { min-width: 640px; } }   /* phones scroll the table sideways instead of crushing it */
+
+/* Ordering app buttons in the header */
+.sy-head-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 32px; }
+.sy-actions { display: grid; grid-template-columns: auto auto; gap: 10px; align-items: center; }
+.sy-btn {
+  display: inline-block; padding: 12px 20px; border-radius: 10px; text-align: center;
+  font-size: var(--fs-0); font-weight: 700; text-decoration: none;
+  color: #fff; border: 1.5px solid rgba(255,255,255,.7);
+}
+.sy-btn:hover { background: rgba(255,255,255,.12); }
+.sy-btn-main { background: #fff; color: var(--navy); border-color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+.sy-btn-main:hover { background: #e9effb; }
+.sy-note { grid-column: 1 / -1; margin: 0; max-width: 360px; color: #dbe4f6; font-size: var(--fs--2); line-height: 1.45; }
+@media (max-width: 640px) {
+  .sy-actions { width: 100%; grid-template-columns: 1fr 1fr; }
+  .sy-btn { padding: 11px 10px; font-size: var(--fs--1); }
+}
