@@ -10,9 +10,16 @@
 </head>
 <body>
 <header class="sy-head">
-  <div class="wrap">
-    <p class="sy-eyebrow">Duke Biomedical Engineering</p>
-    <h1>{{TITLE}}</h1>
+  <div class="wrap sy-head-row">
+    <div>
+      <p class="sy-eyebrow">Duke Biomedical Engineering</p>
+      <h1>{{TITLE}}</h1>
+    </div>
+    <div class="sy-actions">
+      <a class="sy-btn sy-btn-main" href="/ordering-app/">Ordering app</a>
+      <a class="sy-btn" href="{{ORDERING_URL}}">Ordering instructions</a>
+      <p class="sy-note">The ordering app asks you to verify that you are human before it opens.</p>
+    </div>
   </div>
 </header>
 
@@ -24,7 +31,6 @@
       <button class="hb-collapse-all" id="hbCollapseAll" type="button" aria-pressed="false">Collapse all</button>
       {{REFRESH}}
       {{LECTURES_BUTTON}}
-      <a href="{{ORDERING_URL}}">{{ORDERING_LABEL}}</a>
       <a href="{{DOC_PDF}}">Download PDF</a>
     </div>
   </div>
