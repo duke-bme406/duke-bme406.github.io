@@ -412,7 +412,9 @@ a { color: var(--blue); text-decoration: none; }   /* prose links are underlined
    is a section row. */
 .hb-table table { font-size: var(--fs--1); }
 .hb-table td, .hb-table th { padding: 8px 10px; line-height: 1.5; }
-.hb-table tr:first-child td { background: var(--bg-soft); color: var(--ink); font-weight: 700; }
+.hb-table tr.hb-row-head td { background: var(--bg-soft); color: var(--ink); font-weight: 700; }
+.hb-table ul.hb-cell-list { margin: 0; padding-left: 18px; }
+.hb-table ul.hb-cell-list li { margin: 0 0 3px; line-height: 1.5; }
 .hb-table tr.hb-row-span td { background: #e9effb; color: var(--navy); font-weight: 700; border-top: 2px solid var(--navy); }
 .hb-table tr.hb-row-span td .hb-b { color: var(--navy); }
 @media (max-width: 640px) { .hb-table table { min-width: 640px; } }   /* phones scroll the table sideways instead of crushing it */
