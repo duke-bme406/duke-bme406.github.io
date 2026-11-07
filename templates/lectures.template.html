@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lectures | {{SHORT}}</title>
+<meta name="description" content="Lecture slides for {{SHORT}} at Duke Biomedical Engineering.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/assets/css/syllabus.css">
+<link rel="stylesheet" href="/assets/css/lectures.css">
+</head>
+<body class="lec-page" data-short="{{SHORT}}">
+<div class="hb-bar lec-bar">
+  <div class="wrap">
+    <span class="hb-bar-label lec-bar-title" id="lecBarTitle">{{SHORT}} Lectures</span>
+    <div class="hb-bar-links">
+      <a class="lec-keep" href="{{SYLLABUS_URL}}">Syllabus</a>
+      <a class="lec-keep" href="{{ORDERING_URL}}">{{ORDERING_LABEL}}</a>
+      <a class="lec-keep" id="lecDownload" href="#" download>Download PDF</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap lec-wrap">
+  <div class="lec-layout">
+    <aside class="lec-side" aria-label="Lectures">
+      <label class="lec-pick-label" for="lecPick">Lecture</label>
+      <select class="lec-pick" id="lecPick">
+{{OPTIONS}}
+      </select>
+      <ul class="lec-list" id="lecList">
+{{ITEMS}}
+      </ul>
+    </aside>
+    <section class="lec-view" aria-live="polite">
+      <div class="lec-stage" id="lecStage">
+        <button class="lec-arrow" id="slidePrev" type="button" aria-label="Previous slide">&lsaquo;</button>
+        <div class="lec-slide" id="lecSlide"></div>
+        <button class="lec-arrow" id="slideNext" type="button" aria-label="Next slide">&rsaquo;</button>
+      </div>
+      <p class="lec-counter" id="lecStatus"></p>
+    </section>
+  </div>
+</main>
+
+<script id="lecData" type="application/json">{{DATA}}</script>
+<script src="{{PDFJS}}" data-worker="{{PDFJS_WORKER}}" id="pdfjsLib"></script>
+<script src="/assets/js/lectures.js" defer></script>
+</body>
+</html>

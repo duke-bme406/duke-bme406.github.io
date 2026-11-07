@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} | {{SHORT}} Syllabus</title>
+<meta name="description" content="Syllabus for {{SHORT}} at Duke Biomedical Engineering. Synced from the course syllabus document.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/assets/css/syllabus.css">
+</head>
+<body>
+<header class="sy-head">
+  <div class="wrap">
+    <p class="sy-eyebrow">Duke Biomedical Engineering</p>
+    <h1>{{TITLE}}</h1>
+    <p class="sy-lead">Course syllabus. This page updates from the syllabus document every day.</p>
+  </div>
+</header>
+
+<div class="hb-bar">
+  <div class="wrap">
+    <span class="hb-bar-label">{{SHORT}} Syllabus</span>
+    <div class="hb-bar-links">
+      <button class="hb-toc-toggle" type="button" aria-expanded="false" onclick="document.body.classList.toggle('hb-toc-open'); this.setAttribute('aria-expanded', document.body.classList.contains('hb-toc-open'))">Contents</button>
+      <button class="hb-collapse-all" id="hbCollapseAll" type="button" aria-pressed="false">Collapse all</button>
+      {{REFRESH}}
+      {{LECTURES_BUTTON}}
+      <a href="{{ORDERING_URL}}">{{ORDERING_LABEL}}</a>
+      <a href="{{DOC_PDF}}">Download PDF</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap hb-wrap">
+  <div class="hb-layout">
+    <aside class="hb-toc" id="hbToc" aria-label="Syllabus contents">
+      <nav>
+        <ul class="toc-list">
+{{TOC}}
+        </ul>
+      </nav>
+    </aside>
+    <article class="hb-content" id="hbContent">
+{{CONTENT}}
+    </article>
+  </div>
+</main>
+
+<footer class="sy-foot">
+  <div class="wrap">
+    <span>{{SHORT}} &middot; Duke Biomedical Engineering</span>
+    <span><a href="/ordering/">Ordering app guide</a> &middot; <a href="{{DOC_PDF}}">Syllabus PDF</a></span>
+  </div>
+</footer>
+<script src="/assets/js/syllabus.js" defer></script>
+</body>
+</html>
