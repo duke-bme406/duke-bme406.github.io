@@ -1,0 +1,46 @@
+name: Build and deploy site
+
+# Rebuilds the syllabus page (/syllabus/) and lectures page (/syllabus/lectures/)
+# from the syllabus Google Doc and the lectures Drive folder, then publishes the
+# whole site to GitHub Pages. Runs on every push to main, once a day, and on
+# manual trigger (Actions tab > Build and deploy site > Run workflow).
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "43 10 * * *"     # once daily, about 5:43am Eastern
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Rebuild the syllabus and lectures pages from the doc
+        run: python3 scripts/sync_syllabus.py     # writes syllabus/index.html and syllabus/lectures/
+      - name: Collect the files to publish
+        run: |
+          mkdir _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'scripts' --exclude 'templates' --exclude 'data' ./ _site/
+          find _site -type f | sort
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
