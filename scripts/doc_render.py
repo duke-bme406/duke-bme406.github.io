@@ -652,14 +652,55 @@ def build(doc, strip_links=True):
         return "" if not items else '    <ul class="hb-places">\n%s\n    </ul>' % "\n".join(items)
 
     def render_table(chunk):
-        rows = []
+        """Doc table -> site table. Changed for the BME 406 site (Nov 2026):
+        merged cells keep their colspan/rowspan, each paragraph in a cell
+        stays on its own line, a column that is empty in every ordinary row
+        is dropped (the schedule's first column only holds the week titles,
+        which span the whole row), and a row that is one merged cell is
+        styled as a section row."""
+        grid = []
         for tr in re.findall(r"<tr\b[^>]*>(.*?)</tr>", chunk, re.DOTALL):
-            cells = re.findall(r"<t([dh])\b[^>]*>(.*?)</t\1>", tr, re.DOTALL)
-            if not cells:
+            row = []
+            for cm in re.finditer(r"<t([dh])\b([^>]*)>(.*?)</t\1>", tr, re.DOTALL):
+                kind, attrs, inner = cm.group(1), cm.group(2), cm.group(3)
+                span = int((re.search(r'colspan="(\d+)"', attrs) or [0, 1])[1])
+                rspan = int((re.search(r'rowspan="(\d+)"', attrs) or [0, 1])[1])
+                paras = re.findall(r"<p\b[^>]*>(.*?)</p>", inner, re.DOTALL) or [inner]
+                lines = [clean_inline(x, styles, strip_links) for x in paras]
+                lines = [x for x in lines if plain(x)]
+                row.append({"k": kind, "span": span, "rspan": rspan, "html": "<br>".join(lines)})
+            if row:
+                grid.append(row)
+        if not grid:
+            return ""
+        ncols = max(sum(c["span"] for c in r) for r in grid)
+        plain_rows = [r for r in grid if len(r) == ncols and all(c["span"] == 1 and c["rspan"] == 1 for c in r)]
+        drop = set()
+        if plain_rows and not any(c["rspan"] > 1 for r in grid for c in r):
+            drop = {i for i in range(ncols) if all(not plain(r[i]["html"]) for r in plain_rows)}
+            if len(drop) >= ncols:
+                drop = set()
+        if drop:
+            log.debug("table: dropping empty column(s) %s of %d", sorted(drop), ncols)
+        rows = []
+        for r in grid:
+            if len(r) == 1 and r[0]["span"] == ncols:                  # one merged cell: a section row
+                c = r[0]
+                rows.append('      <tr class="hb-row-span"><t%s colspan="%d">%s</t%s></tr>'
+                            % (c["k"], ncols - len(drop), c["html"], c["k"]))
                 continue
-            rows.append("      <tr>%s</tr>" % "".join(
-                "<t%s>%s</t%s>" % (k, clean_inline(c, styles, strip_links), k) for k, c in cells))
-        return "" if not rows else '  <div class="hb-table"><table>\n%s\n  </table></div>' % "\n".join(rows)
+            cells, col = [], 0
+            for c in r:
+                span = c["span"]
+                if span == 1 and col in drop:
+                    col += 1
+                    continue
+                span -= len([i for i in range(col, col + c["span"]) if i in drop]) if span > 1 else 0
+                attrs = (' colspan="%d"' % span if span > 1 else "") + (' rowspan="%d"' % c["rspan"] if c["rspan"] > 1 else "")
+                cells.append("<t%s%s>%s</t%s>" % (c["k"], attrs, c["html"], c["k"]))
+                col += c["span"]
+            rows.append("      <tr>%s</tr>" % "".join(cells))
+        return '  <div class="hb-table"><table>\n%s\n  </table></div>' % "\n".join(rows)
 
     in_guide = False
     guide_nav_at, guide_subs, footnotes_started = None, [], [False]
